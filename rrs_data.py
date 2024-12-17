@@ -47,6 +47,10 @@ class RRSData:
         
         # Get the path to the file
         data_path: Path = Path(__file__).parent / filename
+
+        # check if the file exists
+        if not data_path.exists():
+            raise FileNotFoundError(f'File not found: {data_path}')
         
         # Check if the file type is '.csv' or '.pkl'
         if data_path.suffix not in ['.csv', '.pkl']:
