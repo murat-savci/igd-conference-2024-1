@@ -219,7 +219,7 @@ def main():
     fig.text(0.5, 0.011, f"Spatial resolution: {spatial_resolution}km", ha='center', fontsize=8, bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=0.2'))
     # band       0          1          2          3          4          5
     bands = ['rrs_412', 'rrs_443', 'rrs_490', 'rrs_510', 'rrs_560', 'rrs_665']
-    band = bands[2]
+    band = bands[5]
 
     bandname = band.replace('_', ' ').replace('rrs', 'Rrs')
     sat_band_val_pred, sat_test = plot_scatter_plot(axd['scatter'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Scatter Plot of {bandname}')
