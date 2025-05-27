@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 import matplotlib.ticker as ticker
 
 from my_phd_functions import mask_nan_outliers
+from rrs_data import RRSData, RRSVariables, RRSBandName
+from rrs_plotter import rrs_scatter_plot, rrs_histogram_plot
+from outlier_detector import OutlierDetector
 
 
 # Load your data 4km
@@ -217,19 +220,38 @@ def main():
     # fig.text(0.5, 0.011, f"Spatial resolution: {spatial_resolution}km\nFiltered outlier percent: {int(threshold * 100)}%", ha='center', fontsize=8, bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=0.2'))
 
     fig.text(0.5, 0.011, f"Spatial resolution: {spatial_resolution}km", ha='center', fontsize=8, bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=0.2'))
-    # band       0          1          2          3          4          5
+    # # band       0          1          2          3          4          5
     bands = ['rrs_412', 'rrs_443', 'rrs_490', 'rrs_510', 'rrs_560', 'rrs_665']
-    band = bands[5]
-
+    band = bands[1]
     bandname = band.replace('_', ' ').replace('rrs', 'Rrs')
-    sat_band_val_pred, sat_test = plot_scatter_plot(axd['scatter'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Scatter Plot of {bandname}')
-    plot_histogram(axd['histogram'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Histogram of {bandname}', sat_band_val_pred, sat_test)
+
+    # sat_band_val_pred, sat_test = plot_scatter_plot(axd['scatter'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Scatter Plot of {bandname}')
+    # plot_histogram(axd['histogram'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Histogram of {bandname}', sat_band_val_pred, sat_test)
+    # residuals = plot_linear_regression_residuals(axd['residual'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Residuals of {bandname} band')
+    # plot_residual_histogram(axd['hist_residual'], residuals, f'Histogram of residuals of {bandname} band')
+    # plt.tight_layout()
+    # plt.savefig(f'regression_model_{band}_scatter_histogram_residual_reshist_{spatial_resolution}km_{int(threshold * 100)}_percent.png', dpi=300)
+    # print(f"Saved regression_model_{band}_scatter_histogram_residual_reshist_{spatial_resolution}km_{int(threshold * 100)}_percent.png")
+    # plt.show()
+
+    rrs_data = RRSData(filename)
+
+    outlier_detector = OutlierDetector(rrs_data)
+    rrs_443_insitu, rrs_443_sat = outlier_detector.mask_nan_values(RRSBandName.INSITU_BAND_443, RRSBandName.SAT_BAND_443)
+
+    rrs_scatter_plot(rrs_443_insitu, rrs_443_sat, plot_param=axd['scatter'])
+    rrs_histogram_plot(rrs_443_insitu, rrs_443_sat, plot_param=axd['histogram'])
     residuals = plot_linear_regression_residuals(axd['residual'], df[f'{band}_insitu'], df[f'{band}_sat'], f'Residuals of {bandname} band')
     plot_residual_histogram(axd['hist_residual'], residuals, f'Histogram of residuals of {bandname} band')
     plt.tight_layout()
-    # plt.savefig(f'regression_model_{band}_scatter_histogram_residual_reshist_{spatial_resolution}km_{int(threshold * 100)}_percent.png', dpi=300)
-    print(f"Saved regression_model_{band}_scatter_histogram_residual_reshist_{spatial_resolution}km_{int(threshold * 100)}_percent.png")
+    plt.savefig(f'insitu_vs_sat_data_{band}_scatter_histogram_residual_reshist_{spatial_resolution}km_{int(threshold * 100)}_percent.png', dpi=300)
+    print(f"Saved insitu_vs_sat_data_{band}_scatter_histogram_residual_reshist_{spatial_resolution}km_{int(threshold * 100)}_percent.png")
     plt.show()
+
+
+
+
+    
 
 if __name__ == '__main__':
     main()
